@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDI — Shivom Drugs India | Order Medicines Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C2541;
+    --ink-soft:#4A5372;
+    --paper:#FBFBF8;
+    --card:#FFFFFF;
+    --marigold:#F0A83B;
+    --marigold-deep:#D98A1A;
+    --saffron:#D9622B;
+    --stock:#3E7C59;
+    --stock-bg:#E9F3ED;
+    --out:#B3413A;
+    --out-bg:#FBEAE8;
+    --line:#E6E2D6;
+    --shadow: 0 2px 10px rgba(28,37,65,0.06);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Work Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Fraunces',serif;margin:0;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---- Top bar ---- */
+  header.topbar{
+    background:var(--ink);
+    color:#fff;
+    padding:18px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:sticky;top:0;z-index:50;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{
+    width:42px;height:42px;border-radius:10px;
+    background:var(--marigold);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:var(--ink);
+    flex-shrink:0;
+  }
+  .brand-text h1{font-size:19px;font-weight:600;letter-spacing:0.2px;}
+  .brand-text span{font-size:12px;color:#C9CEE0;}
+  .view-switch{display:flex;gap:6px;background:rgba(255,255,255,0.08);padding:4px;border-radius:10px;}
+  .view-switch button{
+    border:none;background:transparent;color:#C9CEE0;padding:8px 14px;border-radius:8px;
+    font-family:'Work Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:0.15s;
+  }
+  .view-switch button.active{background:var(--marigold);color:var(--ink);}
+
+  main{max-width:1180px;margin:0 auto;padding:24px 20px 100px;}
+
+  /* ---- Sub tabs (Shop/My Orders, Products/Priority Customers) ---- */
+  .sub-tabs{display:flex;gap:8px;margin-bottom:18px;}
+  .sub-tabs button{
+    border:1px solid var(--line);background:var(--card);color:var(--ink-soft);
+    padding:9px 18px;border-radius:999px;font-family:'Work Sans';font-weight:600;font-size:13px;cursor:pointer;
+  }
+  .sub-tabs button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  /* ================= CUSTOMER VIEW ================= */
+  .cust-layout{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start;}
+  @media (max-width:900px){.cust-layout{grid-template-columns:1fr;}}
+
+  .cat-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:18px;}
+  .cat-tabs button{
+    white-space:nowrap;border:1px solid var(--line);background:var(--card);
+    padding:8px 16px;border-radius:999px;font-family:'Work Sans';font-weight:600;font-size:13px;
+    color:var(--ink-soft);cursor:pointer;
+  }
+  .cat-tabs button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;}
+  .pcard{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    display:flex;flex-direction:column;box-shadow:var(--shadow);
+  }
+  .pcard.unavailable{opacity:0.6;}
+  .pcard .photo{
+    height:120px;display:flex;align-items:center;justify-content:center;font-size:46px;
+    position:relative;
+  }
+  .badge{
+    position:absolute;top:8px;right:8px;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;
+    font-family:'Work Sans';letter-spacing:0.3px;
+  }
+  .badge.in{background:var(--stock-bg);color:var(--stock);}
+  .badge.out{background:var(--out-bg);color:var(--out);}
+  .pcard .info{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .pcard .prow-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+  .pcard .pname{font-family:'Fraunces',serif;font-weight:600;font-size:15px;line-height:1.25;}
+  .pcard .price{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:13.5px;white-space:nowrap;text-align:right;}
+  .pcard .price span{display:block;font-size:10px;color:var(--ink-soft);font-weight:500;}
+  .pcard .pdesc{font-size:12px;color:var(--ink-soft);line-height:1.4;min-height:32px;}
+  .order-control{margin-top:auto;}
+  .qty-stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden;width:100%;justify-content:space-between;}
+  .qty-stepper button{border:none;background:var(--paper);width:26px;height:26px;font-size:15px;cursor:pointer;color:var(--ink);}
+  .qty-stepper span{width:24px;text-align:center;font-family:'JetBrains Mono';font-size:13px;}
+  .add-btn{
+    background:var(--marigold);color:var(--ink);border:none;border-radius:8px;padding:7px 12px;
+    font-weight:700;font-size:12.5px;cursor:pointer;width:100%;
+  }
+  .add-btn:disabled{background:var(--line);color:#9a9a90;cursor:not-allowed;}
+
+  /* ---- Bill / receipt ---- */
+  .bill{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);position:sticky;top:90px;
+    background-image:
+      radial-gradient(circle at 0 8px, var(--paper) 5px, transparent 6px),
+      radial-gradient(circle at 100% 8px, var(--paper) 5px, transparent 6px);
+  }
+  .bill-head{padding:16px 18px 10px;border-bottom:1.5px dashed var(--line);}
+  .bill-head h2{font-size:17px;}
+  .bill-head .shop{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+  .bill-items{padding:10px 18px;min-height:60px;}
+  .bill-empty{font-size:12.5px;color:var(--ink-soft);text-align:center;padding:20px 0;}
+  .bill-line{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:12.5px;padding:5px 0;}
+  .bill-line .l-name{color:var(--ink);}
+  .bill-line .l-amt{color:var(--ink-soft);}
+  .bill-foot{padding:12px 18px 18px;border-top:1.5px dashed var(--line);}
+  .bill-total{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-weight:700;font-size:15px;margin-bottom:12px;}
+  .place-order{
+    width:100%;background:var(--saffron);color:#fff;border:none;padding:12px;border-radius:9px;
+    font-weight:700;font-size:14px;cursor:pointer;font-family:'Work Sans';
+  }
+  .place-order:disabled{background:var(--line);color:#9a9a90;cursor:not-allowed;}
+  .bill-note{font-size:10.5px;color:var(--ink-soft);text-align:center;margin-top:8px;}
+
+  /* ---- My Orders (customer) ---- */
+  .orders-list{display:flex;flex-direction:column;gap:14px;max-width:640px;}
+  .order-card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;}
+  .order-card .ohead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .order-card .oid{font-family:'JetBrains Mono';font-weight:600;font-size:13px;}
+  .order-card .odate{font-size:11.5px;color:var(--ink-soft);}
+  .order-card .oline{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;color:var(--ink-soft);font-family:'JetBrains Mono';}
+  .order-card .ofoot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);}
+  .order-card .ototal{font-family:'JetBrains Mono';font-weight:700;font-size:14px;}
+  .slip-btn{background:var(--ink);color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;}
+
+  /* ================= ADMIN VIEW ================= */
+  .admin-grid{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start;}
+  @media (max-width:900px){.admin-grid{grid-template-columns:1fr;}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);}
+  .panel h2{font-size:16px;margin-bottom:4px;}
+  .panel .sub{font-size:12px;color:var(--ink-soft);margin-bottom:16px;}
+  .field{margin-bottom:13px;}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;}
+  .field input[type=text],.field input[type=number],.field input[type=tel],.field select,.field textarea{
+    width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-family:'Work Sans';
+    font-size:13.5px;background:var(--paper);color:var(--ink);
+  }
+  .field textarea{resize:vertical;min-height:60px;}
+  .field-row{display:flex;gap:10px;}
+  .photo-upload{
+    border:1.5px dashed var(--line);border-radius:10px;padding:14px;text-align:center;cursor:pointer;
+    background:var(--paper);position:relative;overflow:hidden;
+  }
+  .photo-upload img{max-width:100%;max-height:90px;border-radius:6px;}
+  .photo-upload .ph-hint{font-size:11.5px;color:var(--ink-soft);}
+  .photo-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
+  .switch{position:relative;width:42px;height:24px;flex-shrink:0;}
+  .switch input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;inset:0;background:var(--out);border-radius:999px;cursor:pointer;transition:0.2s;}
+  .slider:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:0.2s;}
+  input:checked + .slider{background:var(--stock);}
+  input:checked + .slider:before{transform:translateX(18px);}
+  .save-btn{width:100%;background:var(--ink);color:#fff;border:none;padding:11px;border-radius:9px;font-weight:700;font-size:13.5px;cursor:pointer;margin-top:4px;}
+  .cancel-btn{width:100%;background:transparent;color:var(--ink-soft);border:1px solid var(--line);padding:9px;border-radius:9px;font-weight:600;font-size:12.5px;cursor:pointer;margin-top:8px;}
+
+  .admin-list{display:flex;flex-direction:column;gap:10px;}
+  .arow{
+    display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:10px 14px;box-shadow:var(--shadow);
+  }
+  .arow .ph{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;}
+  .arow .ph img{width:100%;height:100%;object-fit:cover;}
+  .arow .meta{flex:1;min-width:0;}
+  .arow .meta .n{font-weight:600;font-size:13.5px;}
+  .arow .meta .c{font-size:11.5px;color:var(--ink-soft);}
+  .arow .price{font-family:'JetBrains Mono';font-size:13px;font-weight:600;white-space:nowrap;}
+  .arow-actions{display:flex;align-items:center;gap:10px;}
+  .icon-btn{border:none;background:var(--paper);border:1px solid var(--line);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:13px;}
+  .empty-state{text-align:center;padding:40px 10px;color:var(--ink-soft);font-size:13px;}
+
+  .priority-badge{background:var(--marigold);color:var(--ink);font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;flex-shrink:0;}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13.5px;font-weight:600;
+    opacity:0;pointer-events:none;transition:0.25s;z-index:100;box-shadow:0 6px 20px rgba(0,0,0,0.2);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  ::-webkit-scrollbar{height:6px;width:6px;}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">SDI</div>
+    <div class="brand-text">
+      <h1>Shivom Drugs India</h1>
+      <span>Sector 12, Nehru Nagar · Open daily 8 AM – 10 PM</span>
+    </div>
+  </div>
+  <div class="view-switch">
+    <button id="tab-customer" class="active" onclick="setView('customer')">Customer</button>
+    <button id="tab-admin" onclick="setView('admin')">Owner</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===================== CUSTOMER VIEW ===================== -->
+  <section id="view-customer">
+    <div class="sub-tabs">
+      <button id="ctab-shop" class="active" onclick="setCustomerTab('shop')">Shop</button>
+      <button id="ctab-orders" onclick="setCustomerTab('orders')">My Orders</button>
+    </div>
+
+    <!-- Shop -->
+    <div id="customer-shop">
+      <div class="cat-tabs" id="catTabs"></div>
+      <div class="cust-layout">
+        <div class="product-grid" id="productGrid"></div>
+
+        <aside class="bill">
+          <div class="bill-head">
+            <h2>Your Order</h2>
+            <div class="shop">Shivom Drugs India · Order Summary</div>
+          </div>
+          <div class="bill-items" id="billItems"></div>
+          <div class="bill-foot">
+            <div class="bill-total"><span>Total</span><span id="billTotal" class="mono">₹0</span></div>
+            <button class="place-order" id="placeOrderBtn" onclick="placeOrder()" disabled>Place Order</button>
+            <div class="bill-note">Prototype: placing an order downloads a text order slip on this device</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- My Orders -->
+    <div id="customer-orders" style="display:none;">
+      <div class="orders-list" id="ordersList"></div>
+    </div>
+  </section>
+
+  <!-- ===================== ADMIN VIEW ===================== -->
+  <section id="view-admin" style="display:none;">
+    <div class="sub-tabs">
+      <button id="atab-products" class="active" onclick="setAdminTab('products')">Products</button>
+      <button id="atab-priority" onclick="setAdminTab('priority')">Priority Customers</button>
+    </div>
+
+    <!-- Products -->
+    <div id="admin-products">
+      <div class="admin-grid">
+        <div class="panel">
+          <h2 id="formTitle">Add New Product</h2>
+          <div class="sub">Set photo, name, price and availability</div>
+
+          <div class="field">
+            <label>Product Photo</label>
+            <div class="photo-upload" id="photoUpload">
+              <input type="file" accept="image/*" id="photoInput" onchange="handlePhoto(event)">
+              <div id="photoPreview">
+                <div style="font-size:28px;">📷</div>
+                <div class="ph-hint">Click to select a photo</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Product Name</label>
+            <input type="text" id="f-name" placeholder="e.g. Paracetamol 650mg (strip of 10)">
+          </div>
+
+          <div class="field-row">
+            <div class="field" style="flex:1;">
+              <label>Category</label>
+              <select id="f-category">
+                <option>Tablets &amp; Capsules</option>
+                <option>Syrups</option>
+                <option>Ayurvedic</option>
+                <option>Personal Care</option>
+                <option>Baby Care</option>
+                <option>Health Devices</option>
+                <option>First Aid</option>
+                <option>Skin Care</option>
+              </select>
+            </div>
+            <div class="field" style="flex:1;">
+              <label>Unit</label>
+              <select id="f-unit">
+                <option>strip</option>
+                <option>bottle</option>
+                <option>tube</option>
+                <option>box</option>
+                <option>pack</option>
+                <option>pc</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Price (₹)</label>
+            <input type="number" id="f-price" placeholder="e.g. 30">
+          </div>
+
+          <div class="field">
+            <label>Details</label>
+            <textarea id="f-desc" placeholder="Short description, e.g. brand or pack size"></textarea>
+          </div>
+
+          <div class="toggle-row">
+            <label style="font-size:13px;font-weight:600;">In stock</label>
+            <label class="switch">
+              <input type="checkbox" id="f-available" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <button class="save-btn" onclick="saveProduct()" id="saveBtn">Save Product</button>
+          <button class="cancel-btn" id="cancelBtn" style="display:none;" onclick="resetForm()">Cancel Edit</button>
+        </div>
+
+        <div>
+          <h2 style="font-size:16px;margin-bottom:12px;">All Products (<span id="prodCount">0</span>)</h2>
+          <div class="admin-list" id="adminList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Priority Customers -->
+    <div id="admin-priority" style="display:none;">
+      <div class="admin-grid">
+        <div class="panel">
+          <h2>Add Priority Customer</h2>
+          <div class="sub">Keep track of regular or priority customers, e.g. elderly patients or chronic prescriptions</div>
+
+          <div class="field">
+            <label>Customer Name</label>
+            <input type="text" id="pc-name" placeholder="e.g. Mrs. Sharma">
+          </div>
+          <div class="field">
+            <label>Phone Number</label>
+            <input type="tel" id="pc-phone" placeholder="e.g. 98765 43210">
+          </div>
+          <div class="field">
+            <label>Note</label>
+            <textarea id="pc-note" placeholder="e.g. Monthly BP medicine, prefers home delivery"></textarea>
+          </div>
+          <button class="save-btn" onclick="savePriorityCustomer()">Add to Priority List</button>
+        </div>
+
+        <div>
+          <h2 style="font-size:16px;margin-bottom:12px;">Priority List (<span id="priorityCount">0</span>)</h2>
+          <div class="admin-list" id="priorityList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------------- OWNER ACCESS ----------------
+// Prototype-level protection only: this passcode lives in the page's own
+// JavaScript, so anyone who views the page source can read it. It stops a
+// casual customer from opening the Owner panel, but it is NOT real security.
+// For a live store, owner access should be checked by a server, not the browser.
+const OWNER_PASSCODE = "SDI786";
+let ownerUnlocked = false;
+
+// ---------------- STATE ----------------
+const EMOJI = {
+  "Tablets & Capsules":"💊",
+  "Syrups":"🧴",
+  "Ayurvedic":"🌿",
+  "Personal Care":"🧼",
+  "Baby Care":"🍼",
+  "Health Devices":"🌡️",
+  "First Aid":"🩹",
+  "Skin Care":"✨"
+};
+
+function loadJSON(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  }catch(e){ return fallback; }
+}
+function saveJSON(key, value){
+  try{ localStorage.setItem(key, JSON.stringify(value)); }catch(e){}
+}
+
+let products = loadJSON('sdi_products', [
+  {id:1, name:"Paracetamol 650mg", category:"Tablets & Capsules", unit:"strip", price:30, desc:"Strip of 10 tablets, for fever and pain relief", photo:null, available:true},
+  {id:2, name:"Cough Syrup", category:"Syrups", unit:"bottle", price:85, desc:"100ml bottle, relief from dry and wet cough", photo:null, available:true},
+  {id:3, name:"Chyawanprash", category:"Ayurvedic", unit:"pack", price:220, desc:"500g jar, daily immunity support", photo:null, available:true},
+  {id:4, name:"Hand Sanitizer", category:"Personal Care", unit:"bottle", price:60, desc:"200ml, 70% alcohol based", photo:null, available:true},
+  {id:5, name:"Baby Diapers", category:"Baby Care", unit:"pack", price:350, desc:"Pack of 30, size M", photo:null, available:false},
+  {id:6, name:"Digital Thermometer", category:"Health Devices", unit:"pc", price:150, desc:"Fast, accurate digital reading", photo:null, available:true},
+  {id:7, name:"Band-Aid Strips", category:"First Aid", unit:"box", price:40, desc:"Box of 20 waterproof strips", photo:null, available:true},
+  {id:8, name:"Antiseptic Cream", category:"Skin Care", unit:"tube", price:55, desc:"20g tube, for cuts and minor wounds", photo:null, available:true},
+]);
+let nextId = products.length ? Math.max(...products.map(p=>p.id))+1 : 1;
+let cart = {}; // id -> qty
+let activeCategory = "All";
+let editingId = null;
+
+let priorityCustomers = loadJSON('sdi_priority_customers', []);
+let nextPcId = priorityCustomers.length ? Math.max(...priorityCustomers.map(c=>c.id))+1 : 1;
+
+let orders = loadJSON('sdi_orders', []);
+let nextOrderId = orders.length ? Math.max(...orders.map(o=>o.numId))+1 : 1;
+
+// ---------------- VIEW SWITCH ----------------
+function setView(v){
+  if(v==='admin' && !ownerUnlocked){
+    const entered = prompt("Enter owner passcode to continue:");
+    if(entered === null) return; // cancelled, stay where we are
+    if(entered !== OWNER_PASSCODE){
+      toast("✗ Wrong passcode");
+      return;
+    }
+    ownerUnlocked = true;
+  }
+  document.getElementById('view-customer').style.display = v==='customer' ? 'block':'none';
+  document.getElementById('view-admin').style.display = v==='admin' ? 'block':'none';
+  document.getElementById('tab-customer').classList.toggle('active', v==='customer');
+  document.getElementById('tab-admin').classList.toggle('active', v==='admin');
+  if(v==='admin'){ renderAdminList(); renderPriorityList(); }
+  if(v==='customer'){ renderCategoryTabs(); renderProductGrid(); renderBill(); renderOrdersList(); }
+}
+
+function setCustomerTab(t){
+  document.getElementById('customer-shop').style.display = t==='shop' ? 'block':'none';
+  document.getElementById('customer-orders').style.display = t==='orders' ? 'block':'none';
+  document.getElementById('ctab-shop').classList.toggle('active', t==='shop');
+  document.getElementById('ctab-orders').classList.toggle('active', t==='orders');
+  if(t==='orders') renderOrdersList();
+}
+
+function setAdminTab(t){
+  document.getElementById('admin-products').style.display = t==='products' ? 'block':'none';
+  document.getElementById('admin-priority').style.display = t==='priority' ? 'block':'none';
+  document.getElementById('atab-products').classList.toggle('active', t==='products');
+  document.getElementById('atab-priority').classList.toggle('active', t==='priority');
+  if(t==='priority') renderPriorityList();
+}
+
+// ---------------- TOAST ----------------
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+// ---------------- CUSTOMER: CATEGORY TABS ----------------
+function renderCategoryTabs(){
+  const cats = ["All", ...new Set(products.map(p=>p.category))];
+  const wrap = document.getElementById('catTabs');
+  wrap.innerHTML = cats.map(c=>
+    `<button class="${c===activeCategory?'active':''}" onclick="setCategory('${c}')">${c}</button>`
+  ).join('');
+}
+function setCategory(c){ activeCategory = c; renderCategoryTabs(); renderProductGrid(); }
+
+// ---------------- CUSTOMER: PRODUCT GRID ----------------
+function renderProductGrid(){
+  const grid = document.getElementById('productGrid');
+  let list = products;
+  if(activeCategory !== "All") list = list.filter(p=>p.category===activeCategory);
+
+  if(list.length===0){
+    grid.innerHTML = `<div class="empty-state">No products in this category yet</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(p=>{
+    const qty = cart[p.id] || 0;
+    const photoHtml = p.photo
+      ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;">`
+      : EMOJI[p.category] || "📦";
+    return `
+    <div class="pcard ${p.available?'':'unavailable'}">
+      <div class="photo" style="background:${p.photo? '#000':'#FDF2DF'};">
+        ${photoHtml}
+        <span class="badge ${p.available?'in':'out'}">${p.available?'In Stock':'Out of Stock'}</span>
+      </div>
+      <div class="info">
+        <div class="prow-top">
+          <div class="pname">${p.name}</div>
+          <div class="price">₹${p.price}<span>/ ${p.unit}</span></div>
+        </div>
+        <div class="pdesc">${p.desc||''}</div>
+        <div class="order-control">
+        ${qty>0
+          ? `<div class="qty-stepper">
+               <button onclick="changeQty(${p.id},-1)">−</button>
+               <span>${qty}</span>
+               <button onclick="changeQty(${p.id},1)">+</button>
+             </div>`
+          : `<button class="add-btn" ${p.available?'':'disabled'} onclick="changeQty(${p.id},1)">
+               ${p.available?'Add to Order':'Not Available'}
+             </button>`
+        }
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function changeQty(id, delta){
+  const p = products.find(x=>x.id===id);
+  if(!p || !p.available) return;
+  const cur = cart[id] || 0;
+  const next = Math.max(0, cur+delta);
+  if(next===0) delete cart[id]; else cart[id]=next;
+  renderProductGrid();
+  renderBill();
+}
+
+// ---------------- CUSTOMER: BILL ----------------
+function renderBill(){
+  const itemsWrap = document.getElementById('billItems');
+  const ids = Object.keys(cart);
+  if(ids.length===0){
+    itemsWrap.innerHTML = `<div class="bill-empty">No items added yet<br>Select a product to get started</div>`;
+    document.getElementById('billTotal').textContent = "₹0";
+    document.getElementById('placeOrderBtn').disabled = true;
+    return;
+  }
+  let total = 0;
+  itemsWrap.innerHTML = ids.map(id=>{
+    const p = products.find(x=>x.id==id);
+    const qty = cart[id];
+    const amt = p.price*qty;
+    total += amt;
+    return `<div class="bill-line"><span class="l-name">${p.name} × ${qty}</span><span class="l-amt">₹${amt}</span></div>`;
+  }).join('');
+  document.getElementById('billTotal').textContent = "₹"+total;
+  document.getElementById('placeOrderBtn').disabled = false;
+}
+
+function placeOrder(){
+  const ids = Object.keys(cart);
+  if(ids.length===0) return;
+
+  const items = ids.map(id=>{
+    const p = products.find(x=>x.id==id);
+    const qty = cart[id];
+    return {name:p.name, unit:p.unit, qty, amt:p.price*qty};
+  });
+  const total = items.reduce((s,it)=>s+it.amt, 0);
+  const now = new Date();
+
+  const order = {
+    numId: nextOrderId++,
+    id: "SDI-" + String(now.getTime()).slice(-6),
+    date: now.toLocaleString('en-IN'),
+    items,
+    total
+  };
+  orders.unshift(order);
+  saveJSON('sdi_orders', orders);
+
+  downloadSlip(order);
+  toast("✓ Order placed — slip downloaded");
+  cart = {};
+  renderProductGrid();
+  renderBill();
+  renderOrdersList();
+}
+
+// ---------------- CUSTOMER: MY ORDERS ----------------
+function renderOrdersList(){
+  const wrap = document.getElementById('ordersList');
+  if(!wrap) return;
+  if(orders.length===0){
+    wrap.innerHTML = `<div class="empty-state">You haven't placed any orders yet</div>`;
+    return;
+  }
+  wrap.innerHTML = orders.map(o=>`
+    <div class="order-card">
+      <div class="ohead">
+        <span class="oid">${o.id}</span>
+        <span class="odate">${o.date}</span>
+      </div>
+      ${o.items.map(it=>`<div class="oline"><span>${it.name} × ${it.qty}</span><span>₹${it.amt}</span></div>`).join('')}
+      <div class="ofoot">
+        <span class="ototal">Total: ₹${o.total}</span>
+        <button class="slip-btn" onclick='downloadSlip(${JSON.stringify(o)})'>Download Slip</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ---------------- ORDER SLIP (TXT DOWNLOAD) ----------------
+function downloadSlip(order){
+  const lines = [];
+  lines.push("SHIVOM DRUGS INDIA (SDI)");
+  lines.push("Sector 12, Nehru Nagar");
+  lines.push("--------------------------------------");
+  lines.push("Order ID : " + order.id);
+  lines.push("Date     : " + order.date);
+  lines.push("--------------------------------------");
+  order.items.forEach(it=>{
+    lines.push(it.name + " (" + it.unit + ") x" + it.qty + "  -  Rs." + it.amt);
+  });
+  lines.push("--------------------------------------");
+  lines.push("TOTAL: Rs." + order.total);
+  lines.push("--------------------------------------");
+  lines.push("Thank you for shopping with SDI!");
+
+  const blob = new Blob([lines.join("\n")], {type:"text/plain"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = order.id + "_slip.txt";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ---------------- ADMIN: PHOTO UPLOAD ----------------
+let pendingPhoto = null;
+function handlePhoto(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    pendingPhoto = ev.target.result;
+    document.getElementById('photoPreview').innerHTML = `<img src="${pendingPhoto}">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ---------------- ADMIN: SAVE / EDIT / DELETE ----------------
+function saveProduct(){
+  const name = document.getElementById('f-name').value.trim();
+  const category = document.getElementById('f-category').value;
+  const unit = document.getElementById('f-unit').value;
+  const price = parseFloat(document.getElementById('f-price').value);
+  const desc = document.getElementById('f-desc').value.trim();
+  const available = document.getElementById('f-available').checked;
+
+  if(!name || isNaN(price)){
+    toast("⚠ Name and Price are required");
+    return;
+  }
+
+  if(editingId){
+    const p = products.find(x=>x.id===editingId);
+    Object.assign(p, {name,category,unit,price,desc,available});
+    if(pendingPhoto) p.photo = pendingPhoto;
+    toast("✓ Product updated");
+  } else {
+    products.push({id:nextId++, name,category,unit,price,desc,available, photo:pendingPhoto});
+    toast("✓ New product added");
+  }
+  saveJSON('sdi_products', products);
+  resetForm();
+  renderAdminList();
+}
+
+function editProduct(id){
+  const p = products.find(x=>x.id===id);
+  editingId = id;
+  document.getElementById('formTitle').textContent = "Edit Product";
+  document.getElementById('f-name').value = p.name;
+  document.getElementById('f-category').value = p.category;
+  document.getElementById('f-unit').value = p.unit;
+  document.getElementById('f-price').value = p.price;
+  document.getElementById('f-desc').value = p.desc||'';
+  document.getElementById('f-available').checked = p.available;
+  pendingPhoto = p.photo;
+  document.getElementById('photoPreview').innerHTML = p.photo
+    ? `<img src="${p.photo}">`
+    : `<div style="font-size:28px;">📷</div><div class="ph-hint">Click to select a photo</div>`;
+  document.getElementById('saveBtn').textContent = "Save Changes";
+  document.getElementById('cancelBtn').style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function resetForm(){
+  editingId = null;
+  pendingPhoto = null;
+  document.getElementById('formTitle').textContent = "Add New Product";
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-price').value = '';
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-available').checked = true;
+  document.getElementById('photoPreview').innerHTML = `<div style="font-size:28px;">📷</div><div class="ph-hint">Click to select a photo</div>`;
+  document.getElementById('saveBtn').textContent = "Save Product";
+  document.getElementById('cancelBtn').style.display = 'none';
+}
+
+function deleteProduct(id){
+  if(!confirm("Remove this product?")) return;
+  products = products.filter(x=>x.id!==id);
+  saveJSON('sdi_products', products);
+  toast("Product removed");
+  renderAdminList();
+}
+
+function toggleAvailability(id){
+  const p = products.find(x=>x.id===id);
+  p.available = !p.available;
+  saveJSON('sdi_products', products);
+  renderAdminList();
+  toast(p.available ? "✓ Now visible in stock" : "Marked out of stock");
+}
+
+// ---------------- ADMIN: PRODUCT LIST ----------------
+function renderAdminList(){
+  const wrap = document.getElementById('adminList');
+  document.getElementById('prodCount').textContent = products.length;
+  if(products.length===0){
+    wrap.innerHTML = `<div class="empty-state">No products yet. Add your first product from the left panel.</div>`;
+    return;
+  }
+  wrap.innerHTML = products.map(p=>`
+    <div class="arow">
+      <div class="ph" style="background:${p.photo?'#000':'#FDF2DF'};">
+        ${p.photo ? `<img src="${p.photo}">` : (EMOJI[p.category]||'📦')}
+      </div>
+      <div class="meta">
+        <div class="n">${p.name}</div>
+        <div class="c">${p.category} · ₹${p.price}/${p.unit}</div>
+      </div>
+      <label class="switch" title="Availability">
+        <input type="checkbox" ${p.available?'checked':''} onchange="toggleAvailability(${p.id})">
+        <span class="slider"></span>
+      </label>
+      <div class="arow-actions">
+        <button class="icon-btn" onclick="editProduct(${p.id})" title="Edit">✎</button>
+        <button class="icon-btn" onclick="deleteProduct(${p.id})" title="Delete">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ---------------- ADMIN: PRIORITY CUSTOMERS ----------------
+function savePriorityCustomer(){
+  const name = document.getElementById('pc-name').value.trim();
+  const phone = document.getElementById('pc-phone').value.trim();
+  const note = document.getElementById('pc-note').value.trim();
+
+  if(!name || !phone){
+    toast("⚠ Name and Phone are required");
+    return;
+  }
+  priorityCustomers.push({id:nextPcId++, name, phone, note});
+  saveJSON('sdi_priority_customers', priorityCustomers);
+  document.getElementById('pc-name').value = '';
+  document.getElementById('pc-phone').value = '';
+  document.getElementById('pc-note').value = '';
+  toast("✓ Added to priority list");
+  renderPriorityList();
+}
+
+function deletePriorityCustomer(id){
+  if(!confirm("Remove this customer from the priority list?")) return;
+  priorityCustomers = priorityCustomers.filter(x=>x.id!==id);
+  saveJSON('sdi_priority_customers', priorityCustomers);
+  toast("Removed from priority list");
+  renderPriorityList();
+}
+
+function renderPriorityList(){
+  const wrap = document.getElementById('priorityList');
+  if(!wrap) return;
+  document.getElementById('priorityCount').textContent = priorityCustomers.length;
+  if(priorityCustomers.length===0){
+    wrap.innerHTML = `<div class="empty-state">No priority customers yet. Add your first one from the left panel.</div>`;
+    return;
+  }
+  wrap.innerHTML = priorityCustomers.map(c=>`
+    <div class="arow">
+      <span class="priority-badge">★ Priority</span>
+      <div class="meta">
+        <div class="n">${c.name}</div>
+        <div class="c">${c.phone}${c.note ? ' · '+c.note : ''}</div>
+      </div>
+      <div class="arow-actions">
+        <button class="icon-btn" onclick="deletePriorityCustomer(${c.id})" title="Delete">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ---------------- INIT ----------------
+renderCategoryTabs();
+renderProductGrid();
+renderBill();
+renderOrdersList();
+</script>
+</body>
+</html>
