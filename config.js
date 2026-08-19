@@ -5,5 +5,5 @@
 // public, and is restricted by the Row Level Security policies you'll set up
 // in schema.sql. Do NOT put your "service_role" key here; that one must stay secret.
 
-const SUPABASE_URL = "https://mskflhqoxnnoqsmsdvca.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1za2ZsaHFveG5ub3FzbXNkdmNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5ODUxNjIsImV4cCI6MjEwMjU2MTE2Mn0.9iiVDS-ZED21RegW3fuRm4zQ0T5aovyg6pJicAEOEkM";
+const SUPABASE_URL = "ttps://mskflhqoxnnoqsmsdvca.supabase.co";
+const SUPABASE_ANON_KEY = "yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1za2ZsaHFveG5ub3FzbXNkdmNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5ODUxNjIsImV4cCI6MjEwMjU2MTE2Mn0.9iiVDS-ZED21RegW3fuRm4zQ0T5aovyg6pJicAEOEkM";
