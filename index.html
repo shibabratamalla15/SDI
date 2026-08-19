@@ -2499,6 +2499,7 @@ checkEntry();
 document.getElementById('waSupportBtn').href = `https://wa.me/${STORE_WHATSAPP}`;
 document.getElementById('callStoreBtn').href = `tel:+${STORE_CALL}`;
 </script>
+<script>
 async function saveOrderToSupabase(orderData) {
   const { data, error } = await supabase
     .from('orders')
@@ -2530,6 +2531,6 @@ async function fetchOrdersForOwner() {
   // Render orders in Owner UI
   renderOwnerOrdersList(orders);
 }
-  
+</script>
 </body></html>
 </html>
